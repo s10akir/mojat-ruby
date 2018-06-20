@@ -5,9 +5,8 @@ require 'socket'
 
 # サーバクラス
 class Server
-  @status = 0
-
   def initialize(port)
+    @status = 0
     @port = port
   end
 
