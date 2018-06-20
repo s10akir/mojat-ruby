@@ -42,10 +42,9 @@ class Channel
     @users.push(user)
 
     Thread.start(user) do
-      while (message = user.gets)
-        message = "#{user.remote_address.ip_address}: #{message}"
-        puts(message)
-        cast(message)
+      while (message = Message.new(user.gets))
+        puts("#{user.remote_address.ip_address}: [#{message.command}] #{message.payload}")
+        cast(message.to_s)
       end
 
       remove_user(user)
@@ -62,6 +61,26 @@ class Channel
     @users.each do |user|
       user.puts(message)
     end
+  end
+end
+
+# クライアントとやりとりするメッセージのクラス
+# プロトコルの策定が面倒なのと、Javaでは標準APIでJSONが扱えないので、移植のことを考えて単純にスペース区切りのStringでメッセージとする。
+class Message
+  attr_accessor(:command, :payload)
+
+  def initialize(string = '')
+    if string
+      # TODO: メッセージタイプごとの実装
+
+      tmp = string.split(' ')
+      @command = tmp[0]
+      @payload = tmp[1]
+    end
+  end
+
+  def to_s
+    "#{@command} #{@payload}"
   end
 end
 
