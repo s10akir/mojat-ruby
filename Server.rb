@@ -17,10 +17,15 @@ class Server
     puts("mojat-server start... on:#{@port}")
     @socket = TCPServer.open(@port)
 
+    id = 0  # TODO: 現在ただの連番なのでなんとかする 一意であればOK
     channel = Channel.new
     while @status == 1
-      connection = @socket.accept
-      channel.add_user(connection)
+      user = User.new(@socket.accept)
+      user.id = id
+      user.name = "名無し#{user.id}"  # 初期名
+      channel.add_user(user)
+
+      id += 1
     end
 
     @socket.close
@@ -38,12 +43,12 @@ class Channel
   end
 
   def add_user(user)
-    puts("#{user} connected!")
+    puts("#{user.to_s} connected!")
     @users.push(user)
 
     Thread.start(user) do
       while (message = Message.new(user.gets))
-        puts("#{user.remote_address.ip_address}: [#{message.command}] #{message.payload}")
+        puts("#{user.to_s}: [#{message.command}] #{message.payload}")
         cast(message.to_s)
       end
 
@@ -52,7 +57,7 @@ class Channel
   end
 
   def remove_user(user)
-    puts("#{user} disconnected!")
+    puts("#{user.to_s} disconnected!")
     @users.delete(user)
     user.close
   end
@@ -61,6 +66,32 @@ class Channel
     @users.each do |user|
       user.puts(message)
     end
+  end
+end
+
+# 接続したユーザを管理するクラス
+class User
+  attr_accessor(:id, :name)
+
+  def initialize(connection)
+    @connection = connection
+  end
+
+  # TCPSocketクラスの一部メソッドのラッパ
+  def gets
+    @connection.gets
+  end
+
+  def puts(message)
+    @connection.puts(message)
+  end
+
+  def ip
+    @connection.remote_address.ip_address
+  end
+
+  def to_s
+    "#{name}\##{id} (#{ip})"
   end
 end
 
