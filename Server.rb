@@ -105,7 +105,13 @@ class Message
 
       tmp = string.split('%')
       @command = tmp[0]
-      @payload = tmp[1]
+      case @command
+        when 'say'
+          @payload = tmp[1]
+        else
+          @command = 'error'
+          @payload = 'command not found.'
+      end
     end
   end
 
