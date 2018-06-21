@@ -95,7 +95,7 @@ class User
 end
 
 # クライアントとやりとりするメッセージのクラス
-# プロトコルの策定が面倒なのと、Javaでは標準APIでJSONが扱えないので、移植のことを考えて単純にスペース区切りのStringでメッセージとする。
+# プロトコルの策定が面倒なのと、Javaでは標準APIでJSONが扱えないので、移植のことを考えて単純に%区切りのStringでメッセージとする。
 class Message
   attr_accessor(:command, :payload)
 
@@ -103,7 +103,7 @@ class Message
     if string
       # TODO: メッセージタイプごとの実装
 
-      tmp = string.split(' ')
+      tmp = string.split('%')
       @command = tmp[0]
       @payload = tmp[1]
     end
