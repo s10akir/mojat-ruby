@@ -48,7 +48,12 @@ class Channel
     Thread.start(user) do
       while (message = Message.new(user.gets))
         puts("#{user.to_s}: [#{message.command}] #{message.payload}")
-        cast(message.to_s)
+        case message.command
+          when 'say'
+            cast(message.to_s)
+          when 'error'
+            user.puts(message.to_s)
+        end
       end
 
       remove_user(user)
