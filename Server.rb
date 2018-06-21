@@ -116,7 +116,7 @@ class Message
   end
 
   def to_s
-    "#{@command} #{@payload}"
+    "#{@command}%#{@payload}"
   end
 end
 
